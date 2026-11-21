@@ -41,11 +41,7 @@ export function getDetailsContent(
   }
 
   // Collect everything after <summary> as nested block children.
-  // The container is an element of the document of the `details` element, not
-  // of the active document. The HTML parser gives nodes of a document without
-  // a browsing context, in which content cannot load a resource or run an
-  // event handler. A container of the active document takes the clones into
-  // the active document.
+  // Not the global `document`: see the rule in `util/detachedDoc.ts`.
   const childrenContainer = details.ownerDocument.createElement("div");
   childrenContainer.setAttribute("data-node-type", "blockGroup");
   let hasChildren = false;

@@ -47,11 +47,7 @@ export function getListItemContent(
   // Move the `li` element's content into a new `div` element
   // This is a hacky workaround to not re-trigger list item parsing,
   // when we are looking to understand what the list item's content actually is, in terms of the schema.
-  // The `div` is an element of the document of the `li` element, not of the
-  // active document. The HTML parser gives nodes of a document without a
-  // browsing context, in which content cannot load a resource or run an event
-  // handler. A `div` of the active document takes the clones into the active
-  // document.
+  // Not the global `document`: see the rule in `util/detachedDoc.ts`.
   const clonedNodeDiv = node.ownerDocument.createElement("div");
   // Mark the `div` element as a `blockGroup` to make the parsing easier.
   clonedNodeDiv.setAttribute("data-node-type", "blockGroup");

@@ -1,3 +1,5 @@
+import { detachedDoc } from "../../../../util/detachedDoc.js";
+
 function getChildIndex(node: Element) {
   return Array.prototype.indexOf.call(node.parentElement!.childNodes, node);
 }
@@ -46,10 +48,7 @@ function liftNestedListsToParent(element: HTMLElement) {
       if (isWhitespaceNode(sibling)) {
         return;
       }
-      // The `li` is an element of the document of the HTML, not of the active
-      // document. The HTML is in a document without a browsing context, in
-      // which content cannot load a resource or run an event handler. An `li`
-      // of the active document takes the sibling into the active document.
+      // Not the global `document`: see the rule in `util/detachedDoc.ts`.
       const siblingContainer = element.ownerDocument.createElement("li");
       siblingContainer.append(sibling);
       list.insertAdjacentElement("afterend", siblingContainer);
@@ -101,16 +100,6 @@ function createGroups(element: HTMLElement) {
       blockGroup.append(blockContainer.nextElementSibling);
     }
   });
-}
-
-// prevent XSS, similar to https://github.com/ProseMirror/prosemirror-view/blob/1251b2b412656a2a06263e4187574beb43651273/src/clipboard.ts#L204
-// https://github.com/TypeCellOS/BlockNote/issues/601
-let _detachedDoc: Document | null = null;
-function detachedDoc() {
-  return (
-    _detachedDoc ||
-    (_detachedDoc = document.implementation.createHTMLDocument("title"))
-  );
 }
 
 export function nestedListsToBlockNoteStructure(

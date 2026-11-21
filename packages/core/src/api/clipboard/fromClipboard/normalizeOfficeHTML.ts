@@ -1,3 +1,4 @@
+import { detachedDoc } from "../../../util/detachedDoc.js";
 import { EMPTY_BLOCK_PLACEHOLDER } from "../../exporters/html/util/serializeBlocksExternalHTML.js";
 
 // Check the original string: attributes on <html> are lost when parsing a fragment.
@@ -188,9 +189,7 @@ export function normalizeOfficeHTML(html: string): string {
     return html;
   }
 
-  // Keep imported resources inert, as in nestedListsToBlockNoteStructure.
-  const document = globalThis.document.implementation.createHTMLDocument("");
-  const root = document.createElement("div");
+  const root = detachedDoc().createElement("div");
   root.innerHTML = html;
 
   if (isWord) {
@@ -234,7 +233,7 @@ export function normalizeOfficeHTML(html: string): string {
       continue;
     }
     for (const child of wrapper.querySelectorAll(":scope > br")) {
-      const paragraph = document.createElement("p");
+      const paragraph = root.ownerDocument.createElement("p");
       paragraph.textContent = EMPTY_BLOCK_PLACEHOLDER;
       child.replaceWith(paragraph);
     }
