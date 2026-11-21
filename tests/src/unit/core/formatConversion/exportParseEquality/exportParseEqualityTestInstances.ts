@@ -849,6 +849,60 @@ export const exportParseEqualityTestInstancesMarkdown: TestInstance<
     executeTest: testExportParseEqualityMarkdown,
   },
   {
+    // A table row is one line of markdown. A hard break in a cell must not
+    // end that line, or the parse reads the rest of the row as a new row.
+    testCase: {
+      name: "markdown/tableWithHardBreakInCell",
+      content: [
+        {
+          type: "table",
+          content: {
+            type: "tableContent",
+            headerRows: 1,
+            rows: [
+              {
+                cells: [
+                  [{ type: "text", text: "Header 1\nLine 2", styles: {} }],
+                  "Header 2",
+                ],
+              },
+              {
+                cells: [
+                  [{ type: "text", text: "Cell 1\nLine 2", styles: {} }],
+                  "Cell 2",
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    },
+    executeTest: testExportParseEqualityMarkdown,
+  },
+  {
+    // A hard break at the edge of a cell stays in the cell too.
+    testCase: {
+      name: "markdown/tableWithLineBreakAtCellEdge",
+      content: [
+        {
+          type: "table",
+          content: {
+            type: "tableContent",
+            rows: [
+              {
+                cells: [
+                  [{ type: "text", text: "\nCell 1", styles: {} }],
+                  [{ type: "text", text: "Cell 2\n", styles: {} }],
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    },
+    executeTest: testExportParseEqualityMarkdown,
+  },
+  {
     testCase: {
       name: "markdown/quote",
       content: [
