@@ -46,7 +46,11 @@ function liftNestedListsToParent(element: HTMLElement) {
       if (isWhitespaceNode(sibling)) {
         return;
       }
-      const siblingContainer = document.createElement("li");
+      // The `li` is an element of the document of the HTML, not of the active
+      // document. The HTML is in a document without a browsing context, in
+      // which content cannot load a resource or run an event handler. An `li`
+      // of the active document takes the sibling into the active document.
+      const siblingContainer = element.ownerDocument.createElement("li");
       siblingContainer.append(sibling);
       list.insertAdjacentElement("afterend", siblingContainer);
     });
@@ -81,12 +85,12 @@ function liftNestedListsToParent(element: HTMLElement) {
 function createGroups(element: HTMLElement) {
   element.querySelectorAll("li + ul, li + ol").forEach((list) => {
     const listItem = list.previousElementSibling as HTMLElement;
-    const blockContainer = document.createElement("div");
+    const blockContainer = element.ownerDocument.createElement("div");
 
     listItem.insertAdjacentElement("afterend", blockContainer);
     blockContainer.append(listItem);
 
-    const blockGroup = document.createElement("div");
+    const blockGroup = element.ownerDocument.createElement("div");
     blockGroup.setAttribute("data-node-type", "blockGroup");
     blockContainer.append(blockGroup);
 

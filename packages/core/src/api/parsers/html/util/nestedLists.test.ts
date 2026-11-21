@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { afterEach, describe, expect, it } from "vite-plus/test";
 import { nestedListsToBlockNoteStructure } from "./nestedLists.js";
 
 async function testHTML(html: string) {
@@ -161,5 +161,45 @@ describe("Lift nested lists", () => {
     </li>
  </ol>`;
     await testHTML(html);
+  });
+});
+
+describe("content after a nested list", () => {
+  const append = Element.prototype.append;
+
+  afterEach(() => {
+    Element.prototype.append = append;
+  });
+
+  // The HTML is in a document without a browsing context. In the active
+  // document, an element of the HTML can load a resource and run an event
+  // handler.
+  it("stays out of the active document", () => {
+    const inActiveDocument: string[] = [];
+    Element.prototype.append = function (
+      this: Element,
+      ...nodes: (Node | string)[]
+    ) {
+      append.apply(this, nodes);
+      for (const node of nodes) {
+        if (
+          typeof node !== "string" &&
+          node.ownerDocument === document &&
+          node.nodeName === "IMG"
+        ) {
+          inActiveDocument.push(node.nodeName);
+        }
+      }
+    };
+
+    const htmlNode = nestedListsToBlockNoteStructure(
+      `<ul><li>Item<ul><li>Nested item</li></ul><img src="image.png"></li></ul>`,
+    );
+
+    // The content after the nested list is in a list item of its own.
+    expect(htmlNode.innerHTML).toMatchInlineSnapshot(
+      `"<ul><div><li>Item</li><div data-node-type="blockGroup"><ul><li>Nested item</li></ul></div></div><li><img src="image.png"></li></ul>"`,
+    );
+    expect(inActiveDocument).toEqual([]);
   });
 });
