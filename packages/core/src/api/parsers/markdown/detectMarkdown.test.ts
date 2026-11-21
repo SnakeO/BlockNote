@@ -1,3 +1,4 @@
+import { runInNewContext } from "node:vm";
 import { describe, expect, it } from "vite-plus/test";
 import { isMarkdown } from "./detectMarkdown.js";
 
@@ -184,6 +185,21 @@ describe("isMarkdown", () => {
     it("should not detect invalid tables", () => {
       expect(isMarkdown("| Header 1 | Header 2\n")).toBe(false); // missing closing pipe
       expect(isMarkdown("Header 1 | Header 2 |\n")).toBe(false); // missing opening pipe
+    });
+
+    it("should not detect a row with many pipes and no closing pipe", () => {
+      const text = "|" + " a |".repeat(60) + " x";
+
+      // The test runner cannot stop a synchronous call: a check that does not
+      // end blocks the test run. `runInNewContext` stops the check after
+      // 5 seconds, and the test fails.
+      const result: unknown = runInNewContext(
+        "isMarkdown(text)",
+        { isMarkdown, text },
+        { timeout: 5000 },
+      );
+
+      expect(result).toBe(false);
     });
   });
 
