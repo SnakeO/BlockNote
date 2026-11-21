@@ -801,6 +801,91 @@ export const exportParseEqualityTestInstancesMarkdown: TestInstance<
     executeTest: testExportParseEqualityMarkdown,
   },
   {
+    // A space ends the URL of a markdown link or image, so the export must
+    // not write such a URL as it is. The image URL comes back with `%20` for
+    // the space, because the HTML parse of an image reads the `src` property.
+    testCase: {
+      name: "markdown/urlWithSpace",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "link",
+              content: "Link",
+              href: "https://example.com/my file.pdf",
+            },
+          ],
+        },
+        {
+          type: "image",
+          props: {
+            url: "https://example.com/my image.png",
+            name: "Example",
+          },
+        },
+        {
+          type: "video",
+          props: {
+            url: "https://example.com/my video.mp4",
+            name: "Example",
+          },
+        },
+      ],
+    },
+    executeTest: testExportParseEqualityMarkdown,
+  },
+  {
+    // The angle brackets of a URL with a space must not change the cells of
+    // a table row.
+    testCase: {
+      name: "markdown/urlWithSpaceInTableCell",
+      content: [
+        {
+          type: "table",
+          content: {
+            type: "tableContent",
+            rows: [
+              {
+                cells: [
+                  [
+                    {
+                      type: "link",
+                      content: "Link",
+                      href: "https://example.com/my file.pdf",
+                    },
+                  ],
+                  "Cell 2",
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    },
+    executeTest: testExportParseEqualityMarkdown,
+  },
+  {
+    // The markdown parser reads a no-break space as a part of the URL, so
+    // the export writes this URL as it is, without angle brackets.
+    testCase: {
+      name: "markdown/urlWithNoBreakSpace",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "link",
+              content: "Link",
+              href: "https://example.com/my\u00a0file.pdf",
+            },
+          ],
+        },
+      ],
+    },
+    executeTest: testExportParseEqualityMarkdown,
+  },
+  {
     testCase: {
       name: "markdown/table",
       content: [
