@@ -2238,4 +2238,13 @@ Some text after.`,
     },
     executeTest: testParseMarkdown,
   },
+  // A paragraph line after the first can have any indent; the indent is
+  // stripped (CommonMark ex. 223)
+  {
+    testCase: {
+      name: "paragraphContinuationIndent",
+      content: `aaa\n      bbb\n\tccc`,
+    },
+    executeTest: testParseMarkdown,
+  },
 ];
