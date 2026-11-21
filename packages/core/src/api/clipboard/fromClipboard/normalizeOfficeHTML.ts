@@ -157,13 +157,13 @@ function normalizeWordLists(root: HTMLElement) {
       stack.pop();
     }
 
-    const item = root.ownerDocument.createElement("li");
+    const item = detachedDoc().createElement("li");
     // Block properties are parsed from the li, while the paragraph below keeps
     // its styles for inline-content parsing.
     item.setAttribute("style", paragraph.getAttribute("style")!);
     let current = stack[stack.length - 1];
     if (!current || current.level !== level) {
-      const element = root.ownerDocument.createElement(tag);
+      const element = detachedDoc().createElement(tag);
       if (current) {
         current.lastItem.append(element);
       } else {
@@ -233,7 +233,7 @@ export function normalizeOfficeHTML(html: string): string {
       continue;
     }
     for (const child of wrapper.querySelectorAll(":scope > br")) {
-      const paragraph = root.ownerDocument.createElement("p");
+      const paragraph = detachedDoc().createElement("p");
       paragraph.textContent = EMPTY_BLOCK_PLACEHOLDER;
       child.replaceWith(paragraph);
     }
