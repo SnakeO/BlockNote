@@ -823,6 +823,44 @@ export const exportTestInstancesBlockNoteHTML: TestInstance<
     },
     executeTest: testExportBlockNoteHTML,
   },
+  {
+    testCase: {
+      name: "style/adjacentItalic",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "Struck",
+              styles: { italic: true, strike: true },
+            },
+            {
+              type: "text",
+              text: "Italic",
+              styles: { italic: true },
+            },
+          ],
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "Italic",
+              styles: { italic: true },
+            },
+            {
+              type: "text",
+              text: "Underlined",
+              styles: { italic: true, underline: true },
+            },
+          ],
+        },
+      ],
+    },
+    executeTest: testExportBlockNoteHTML,
+  },
   // Numbered list with custom start
   {
     testCase: {
